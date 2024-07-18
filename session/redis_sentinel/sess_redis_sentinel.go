@@ -108,7 +108,7 @@ func (rs *SessionStore) SessionRelease(w http.ResponseWriter) {
 	}
 	c := rs.p
 	r := c.Set(rs.sid, string(b), time.Duration(rs.maxlifetime)*time.Second)
-	fmt.Println("SessionRelease result ", r.Val(), r.Err())
+	fmt.Println("SessionRelease result ", rs.sid, rs.values, r.Val(), r.Err())
 }
 
 // Provider redis_sentinel session provider
@@ -191,6 +191,7 @@ func (rp *Provider) SessionRead(sid string) (session.Store, error) {
 	}
 
 	rs := &SessionStore{p: rp.poollist, sid: sid, values: kv, maxlifetime: rp.maxlifetime}
+	fmt.Println("SessionRead ", sid, kv)
 	return rs, nil
 }
 
@@ -223,7 +224,7 @@ func (rp *Provider) SessionRegenerate(oldsid, sid string) (session.Store, error)
 func (rp *Provider) SessionDestroy(sid string) error {
 	c := rp.poollist
 	r := c.Del(sid)
-	fmt.Println("SessionDestroy result ", r.Val(), r.Err())
+	fmt.Println("SessionDestroy ", sid, r.Val(), r.Err())
 	return nil
 }
 
