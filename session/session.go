@@ -217,13 +217,12 @@ func (manager *Manager) SessionStart(w http.ResponseWriter, r *http.Request) (se
 	if sid != "" && manager.provider.SessionExist(sid) {
 		return manager.provider.SessionRead(sid)
 	}
-
 	// Generate a new session
 	sid, errs = manager.sessionID()
 	if errs != nil {
 		return nil, errs
 	}
-
+	fmt.Println("SessionStart Generate new ", sid)
 	session, err = manager.provider.SessionRead(sid)
 	if err != nil {
 		return nil, err
@@ -242,6 +241,7 @@ func (manager *Manager) SessionStart(w http.ResponseWriter, r *http.Request) (se
 		cookie.Expires = time.Now().Add(time.Duration(manager.config.CookieLifeTime) * time.Second)
 	}
 	if manager.config.EnableSetCookie {
+		fmt.Println("SessionStart SetCookie")
 		http.SetCookie(w, cookie)
 	}
 	r.AddCookie(cookie)
