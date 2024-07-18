@@ -20,8 +20,10 @@
 //
 // Usage:
 // import(
-//   _ "github.com/beego/beego/session/redis_sentinel"
-//   "github.com/beego/beego/session"
+//
+//	_ "github.com/beego/beego/session/redis_sentinel"
+//	"github.com/beego/beego/session"
+//
 // )
 //
 //	func init() {
@@ -33,14 +35,16 @@
 package redis_sentinel
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/beego/beego/session"
 	"github.com/go-redis/redis"
+
+	"github.com/beego/beego/session"
 )
 
 var redispder = &Provider{}
@@ -103,7 +107,8 @@ func (rs *SessionStore) SessionRelease(w http.ResponseWriter) {
 		return
 	}
 	c := rs.p
-	c.Set(rs.sid, string(b), time.Duration(rs.maxlifetime)*time.Second)
+	r := c.Set(rs.sid, string(b), time.Duration(rs.maxlifetime)*time.Second)
+	fmt.Println("SessionRelease result ", r.Val(), r.Err())
 }
 
 // Provider redis_sentinel session provider
@@ -217,7 +222,8 @@ func (rp *Provider) SessionRegenerate(oldsid, sid string) (session.Store, error)
 // SessionDestroy delete redis session by id
 func (rp *Provider) SessionDestroy(sid string) error {
 	c := rp.poollist
-	c.Del(sid)
+	r := c.Del(sid)
+	fmt.Println("SessionDestroy result ", r.Val(), r.Err())
 	return nil
 }
 

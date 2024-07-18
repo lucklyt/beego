@@ -16,13 +16,15 @@
 //
 // Usage:
 // import(
-//   "github.com/beego/beego/session"
+//
+//	"github.com/beego/beego/session"
+//
 // )
 //
-//	func init() {
-//      globalSessions, _ = session.NewManager("memory", `{"cookieName":"gosessionid", "enableSetCookie,omitempty": true, "gclifetime":3600, "maxLifetime": 3600, "secure": false, "cookieLifeTime": 3600, "providerConfig": ""}`)
-//		go globalSessions.GC()
-//	}
+//		func init() {
+//	     globalSessions, _ = session.NewManager("memory", `{"cookieName":"gosessionid", "enableSetCookie,omitempty": true, "gclifetime":3600, "maxLifetime": 3600, "secure": false, "cookieLifeTime": 3600, "providerConfig": ""}`)
+//			go globalSessions.GC()
+//		}
 //
 // more docs: http://beego.me/docs/module/session.md
 package session
@@ -81,7 +83,7 @@ func Register(name string, provide Provider) {
 	provides[name] = provide
 }
 
-//GetProvider
+// GetProvider
 func GetProvider(name string) (Provider, error) {
 	provider, ok := provides[name]
 	if !ok {
@@ -254,6 +256,7 @@ func (manager *Manager) SessionStart(w http.ResponseWriter, r *http.Request) (se
 
 // SessionDestroy Destroy session by its id in http request cookie.
 func (manager *Manager) SessionDestroy(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Manager SessionDestroy")
 	if manager.config.EnableSidInHTTPHeader {
 		r.Header.Del(manager.config.SessionNameInHTTPHeader)
 		w.Header().Del(manager.config.SessionNameInHTTPHeader)
@@ -265,6 +268,7 @@ func (manager *Manager) SessionDestroy(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sid, _ := url.QueryUnescape(cookie.Value)
+	fmt.Println("Manager SessionDestroy sid ", sid)
 	manager.provider.SessionDestroy(sid)
 	if manager.config.EnableSetCookie {
 		expiration := time.Now()
@@ -276,7 +280,7 @@ func (manager *Manager) SessionDestroy(w http.ResponseWriter, r *http.Request) {
 			Domain:   manager.config.Domain,
 			SameSite: manager.config.CookieSameSite,
 		}
-
+		fmt.Println("Manager SessionDestroy SetCookie ", sid)
 		http.SetCookie(w, cookie)
 	}
 }
